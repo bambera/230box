@@ -61,7 +61,7 @@ La comunicación se realiza através de un módulo SPI to CANbus. Esto mantiene 
 
 * 1 par cruzado para CANbus.
 
-* 2 pares para alimentación.
+* 2 pares para alimentación 12V.
 
 * 1 par auxiliar.
 
@@ -82,6 +82,7 @@ La comunicación se realiza através de un módulo SPI to CANbus. Esto mantiene 
 
 * Una placa artesanal con cuatro drivers (en su momento se subirá el esquema).
 
+* 12VDC to 5VDC
 
 
 ## Licencia
