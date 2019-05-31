@@ -6,13 +6,13 @@ Proyecto para automatizar una caja de electricidad de 230 voltios de una autocar
 
 La caja dispone de:
 
-# 3 Entradas de corriente.
+### 3 Entradas de corriente.
 
 Una proviene del inversor el cual és activado solo bajo demanda através del arduino, para ello dispone de su driver correspondiente instalado en el inversor.
 
 Las otras dos son similares pero independientes cada una dispuesta hacia el exterior a sendos laterales. Estos pueden tanto adquirir como ofrecer 230V indiferentemente.
 
-# 4 Salidas de corriente.
+### 4 Salidas de corriente.
 
 Las dos tomas exteriores, que como dijimos pueden tanto adquirir como ofrecer 230V indiferentemente.
 
@@ -22,7 +22,7 @@ El cargador de baterías de 230V. Este solo puede ser activado cuando la aliment
 
 ## Todas las salidas estan devidamente protegidas:
 
-# De forma pasiva
+### De forma pasiva
 
 * Dispone de Protección de armónicos (Filtro EMI).
 
@@ -34,7 +34,7 @@ El cargador de baterías de 230V. Este solo puede ser activado cuando la aliment
 
 * Magnetotérmico.
 
-# De forma activa (através del arduino)
+### De forma activa (através del arduino)
 
 * Protección de sobretensión y bajotensión de la batería.
 
