@@ -26,7 +26,10 @@ void setup()
            | _BV(WGM11);  // mode 10: ph. correct PWM, TOP = ICR1
     TCCR1B = _BV(WGM13)   // ditto
            | _BV(CS10);   // prescaler = 1
-    ICR1   = 320;         // TOP = 320
+    ICR1   = 320;         // TOP = 320; 24.883 MHz; PWM 0~320
+                          // TOP = 400; 19.906 MHz
+                          // TOP = 200; 39.813 MHz
+                          // TOP = 100; 79.626 MHz
 
     // Set the PWM pins as output.
     pinMode( 9, OUTPUT);
