@@ -1,45 +1,24 @@
-// PWM output @ 25 kHz, only on pins 9 and 10.
-// Output value should be between 0 and 320, inclusive.
-void analogWrite25k(int pin, int value)
-{
-    switch (pin) {
-        case 9:
-            OCR1A = value;
-            break;
-        case 10:
-            OCR1B = value;
-            break;
-        default:
-            // no other pin will work
-            break;
-    }
-}
+/*
+ * 230box - Control for 230V electronic box
+ * with 5 relay, 3 voltimeter, 1 amperimeter, 2 fans and CANbus and various temp sensors.
+ * 3 possible input 230VAC and 3 output 230VAC
+ *
+ * State testing, developer c2mismo.
+ * Licency GNU.
+ */
+
+
+#include "Arduino.h"
+#include "AnalogWritePlus.h"
+
+AnalogWritePlus plus(1, 100, 20);
 
 void setup()
 {
-    // Configure Timer 1 for PWM @ 25 kHz.
-    TCCR1A = 0;           // undo the configuration done by...
-    TCCR1B = 0;           // ...the Arduino core library
-    TCNT1  = 0;           // reset timer
-    TCCR1A = _BV(COM1A1)  // non-inverted PWM on ch. A
-           | _BV(COM1B1)  // same on ch; B
-           | _BV(WGM11);  // mode 10: ph. correct PWM, TOP = ICR1
-    TCCR1B = _BV(WGM13)   // ditto
-           | _BV(CS10);   // prescaler = 1
-    ICR1   = 320;         // TOP = 320; 24.883 MHz; PWM 0~320
-                          // TOP = 400; 19.906 MHz
-                          // TOP = 200; 39.813 MHz
-                          // TOP = 100; 79.626 MHz
-
-    // Set the PWM pins as output.
-    pinMode( 9, OUTPUT);
-    pinMode(10, OUTPUT);
+  plus.begin(230);
 }
 
 void loop()
 {
-    // Just an example:
-    analogWrite25k( 9, 110);
-    analogWrite25k(10, 210);
-    for (;;) ;  // infinite loop
+  plus.write(9, 15);
 }
