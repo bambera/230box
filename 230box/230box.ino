@@ -1,4 +1,4 @@
-/*
+ /*
  * 230box - Control for 230V electronic box
  * with 5 relay, 3 voltimeter, 1 amperimeter, 2 fans and CANbus and various temp sensors.
  * 3 possible input 230VAC and 3 output 230VAC
