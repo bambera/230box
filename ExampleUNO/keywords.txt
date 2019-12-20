@@ -4,6 +4,7 @@ calibMin KEYWORD2
 calibMax KEYWORD2
 write KEYWORD2
 timer LITERAL1
+pin  LITERAL1
 fanMin LITERAL1
 fanMax LITERAL1
 top LITERAL1

@@ -21,7 +21,7 @@
 int fanMin = 30;
 int fanMax = 230;
 
-AnalogWritePlus2 Plus9 (9, fanMin, fanMax);
+AnalogWritePlus2 Plus9 (UNO, 9, fanMin, fanMax);
 
 byte valor = 0; // 0 to 100%
 int top = 230; // Value frecuency MHz
