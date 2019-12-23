@@ -1,0 +1,14 @@
+AnalogWritePus KEYWORD1
+begin KEYWORD2
+calibMin KEYWORD2
+calibMax KEYWORD2
+write KEYWORD2
+timer LITERAL1
+pin  LITERAL1
+fanMin LITERAL1
+fanMax LITERAL1
+top LITERAL1
+calMin LITERAL1
+calMax LITERAL1
+value LITERAL1
+
