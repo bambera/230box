@@ -11,16 +11,16 @@
 #include "Arduino.h"
 #include "AnalogWritePlus.h"
 
-AnalogWritePlus plus(1, 100, 20);
+AnalogWritePlus plus(1, 9, 30, 317);
 
 void setup()
 {
-  plus.begin(230);
+  plus.begin(317);
 }
 
 void loop()
 {
-  plus.write(9, 15);
+  plus.write(15);
 }
 
 /*
