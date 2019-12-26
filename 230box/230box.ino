@@ -7,21 +7,87 @@
  * License GNU, see at the end.
  */
 
+//         //////////\\\\\\\\\\
+//        //   LIBRARY CONF   \\
+//       ////////////\\\\\\\\\\\\
 
 #include "Arduino.h"
 #include "AnalogWritePlus.h"
+#include "OneWire.h"
+#include "DallasTemperature.h"
 
-AnalogWritePlus plus(1, 9, 30, 317);
+AnalogWritePlus fan1(1, 9, 30, 317);
+AnalogWritePlus fan2(1, 10, 30, 317);
 
-void setup()
-{
-  plus.begin(317);
+const int pinOneWire = 2;
+
+OneWire oneWire (pinOneWire);
+DallasTemperature DS18B20 (&oneWire);
+
+// Variables con las direcciones únicas del sensor DS18B20
+DeviceAddress sensor1 = {0x28, 0xAA, 0xE0, 0x2A, 0x1B, 0x13, 0x02, 0xB2}; //Mark Amerillo/Verde
+// Otro sensor1
+DeviceAddress sensor2 = {0x28, 0xE5, 0xE0, 0xAF, 0x33, 0x14, 0x01, 0x86};
+
+//       \\\\\\\\\\\\////////////
+//        \\ END LIBRARY CONF //
+//         \\\\\\\\\\//////////
+
+//         /////////\\\\\\\\
+//        //   VARIABLES   \\
+//       ///////////\\\\\\\\\\
+
+bool errorTemp = true;
+float temp1 = 0;
+float temp2 = 0;
+int valFan1 = 0;
+int valFan2 = 0;
+
+//       \\\\\\\\\\\//////////
+//        \\ END VARIABLES //
+//         \\\\\\\\\////////
+
+void setup(){
+  Serial.begin(9600);
+  fan1.begin(317);
+  DS18B20.begin();
 }
 
-void loop()
-{
-  plus.write(15);
+void loop(){
+  if ((errorSensor(sensor1))||(errorSensor(sensor2))){
+    errorTemp = true;
+  }
+  if (!errorTemp){
+    errorTemp = false;
+    temp1 = readFloat(sensor1);
+    temp2 = readFloat(sensor2);
+  }
+
+  if (errorTemp){ valFan1 = 50; valFan2 = 50;}
+
+  fan1.write(valFan1);
+  fan2.write(valFan2);
 }
+
+//         /////////\\\\\\\\
+//        //   FUNCTIONS   \\
+//       ///////////\\\\\\\\\\
+
+bool errorSensor (int sensor){
+  DS18B20.requestTemperatures();
+  float tmp = DS18B20.getTempC(sensor);
+  if (tmp == -127.00) return true; else return false;
+}
+
+float readFloat (int sensor){
+  DS18B20.requestTemperatures();
+  float tmp = DS18B20.getTempC(sensor);
+  return tmp;
+}
+
+//       \\\\\\\\\\\//////////
+//        \\ END FUNCTIONS //
+//         \\\\\\\\\////////
 
 /*
   License:
