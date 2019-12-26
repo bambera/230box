@@ -49,60 +49,6 @@ void setup() {
 
 void loop() {
 
-////////////\\\\\\\\\\\\
-//   FUCTION IN RAW    \\
-////////////\\\\\\\\\\\\\\
-
-  DS18B20.requestTemperatures();
-  float tmpSensorFlo = DS18B20.getTempC(sensor1);
-    Serial.print("tmpSensorFlo: ");
-  if (tmpSensorFlo == -127.00){
-    Serial.print("ERROR READ TEMP");
-  }else{
-    Serial.print(tmpSensorFlo);
-    Serial.println(" ºC");
-    delay(200);
-  }
-  
-  int tmpSensorInt = tmpSensorFlo*100;
-    Serial.print("tmpSensorInt: ");
-  if (tmpSensorFlo == -127.00){
-    Serial.print("ERROR READ TEMP");
-  }else{
-    Serial.print(tmpSensorInt);
-    Serial.println(" ºC");
-    delay(200);
-  }
-
-  float tmpSenDirFlo = tmpSensorInt/100;
-    Serial.print("tmpSenDirFlo: ");
-  if (tmpSensorFlo == -127.00){
-    Serial.print("ERROR READ TEMP");
-  }else{
-    Serial.print(tmpSenDirFlo);
-    Serial.println(" ºC");
-    delay(200);
-  }
-  
-  float temperaturaSensor = tmpSensorInt;
-  temperaturaSensor = temperaturaSensor/100;
-  Serial.print("temperaturaSensor: ");
-  if (tmpSensorFlo == -127.00){
-    Serial.print("ERROR READ TEMP");
-  }else{
-    Serial.print(temperaturaSensor);
-    Serial.println(" ºC");
-    delay(200);
-  }
-
-///////////////////////////
-// END FUCTION IN RAW   //
-/////////////////////////
-
-//////////\\\\\\\\\\
-//  WITH FUCTION   \\
-//////////\\\\\\\\\\\\
-
 
   if (!errorSensor(sensor1)){
     float result1 = readFloat(sensor1);
@@ -126,10 +72,6 @@ void loop() {
 
   if (error(sensor1)) Serial.print("error de lectura en sensor1");
 
-///////////////////////
-// END WITH FUCTION //
-/////////////////////
-
   while(1);
 }
 
@@ -137,29 +79,25 @@ void loop() {
 //  FUCTION   \\
 ///////\\\\\\\\\\
 
-bool errorSensor (int sensor)
-{
+bool errorSensor (int sensor){
   DS18B20.requestTemperatures();
   float tmp = DS18B20.getTempC(sensor);
   if (tmp == -127.00) return true; else return false;
 }
 
-float readFloat (int sensor)
-{
+float readFloat (int sensor){
   DS18B20.requestTemperatures();
   float tmp = DS18B20.getTempC(sensor);
   return tmp;
 }
 
-int readInt (int sensor)
-{
+int readInt (int sensor){
   DS18B20.requestTemperatures();
   int tmp = DS18B20.getTempC(sensor)*100;
   return tmp;
 }
 
-float result (int tmpInt)
-{
+float result (int tmpInt){
   float tempResult = tmpInt;
   tempResult = tempResult/100;
   return tempResult;
