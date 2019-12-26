@@ -1,13 +1,13 @@
 /*
  * Created and checked the functions for DS18B20
  * 
- * We created an checked 4 functions for used whith DS18B20.
+ * We created and checked 4 functions to use with DS18B20.
  * 
  * Function errorSensor check if the sensor has an error.
  * 
  * Function readFloat returns the temperature readings.
  * 
- * Fuction readInt returns the temperature readings who integer,
+ * Fuction readInt returns the temperature readings how integer,
  * to avoid possible mistakes when working with float numbers.
  * 
  * Function result returns the result of operations as a float number.
@@ -137,7 +137,7 @@ void loop() {
 //  FUCTION   \\
 ///////\\\\\\\\\\
 
-boolean errorSensor (int sensor)
+bool errorSensor (int sensor)
 {
   DS18B20.requestTemperatures();
   float tmp = DS18B20.getTempC(sensor);
