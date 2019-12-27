@@ -70,9 +70,11 @@ void loop() {
     delay(200);
   }
 
-  if (error(sensor1)) Serial.print("error de lectura en sensor1");
+  if (errorSensor(sensor1)) Serial.print("error de lectura en sensor1");
 
-  while(1);
+  Serial.println();
+
+  delay(1000);
 }
 
 ///////\\\\\\\\
