@@ -3,6 +3,20 @@
  * with 5 relay, 3 voltimeter, 1 amperimeter, 2 fans and CANbus and various temp sensors.
  * 3 possible input 230VAC and 3 output 230VAC
  *
+ * We have decided not to use a PID controller.
+ * 1. Because we can't keep maintaining a specific temperature.
+ * 2. Excessive changes in temperature are not expected.
+ * 3. It remains to experiment and determine the thermal response of the components.
+ *
+ * The temperature controller is configured as follows:
+ * 1. We will treat the data as integers from the beginning, because the map function with decimals has a not very clear answer.
+ * 2. The chaining is not done until it reaches 45ºC (4500).
+ * 3. The engine starts at 4% ±.
+ * 3. 100% or maximum engine power is at 70 ° C (7000).
+ * 4. The engine will not stop until it reaches 40ºC, with a timely hysteresis.
+ *
+ * With the AnaloWritePlus230box we ensure that the engine runs at 25kHz (317).
+ *
  * State testing, developer c2mismo 2019.
  * License GNU, see at the end.
  */
@@ -12,12 +26,11 @@
 //       ////////////\\\\\\\\\\\\
 
 #include "Arduino.h"
-#include "AnalogWritePlus.h"
+#include "AnalogWritePlus230box.h"
 #include "OneWire.h"
 #include "DallasTemperature.h"
 
-AnalogWritePlus fan1(1, 9, 30, 317);
-AnalogWritePlus fan2(1, 10, 30, 317);
+AnalogWritePlus230box fan(317);
 
 const int pinOneWire = 2;
 
@@ -26,7 +39,7 @@ DallasTemperature DS18B20 (&oneWire);
 
 // Variables con las direcciones únicas del sensor DS18B20
 DeviceAddress sensor1 = {0x28, 0xAA, 0xE0, 0x2A, 0x1B, 0x13, 0x02, 0xB2}; //Mark Amerillo/Verde
-// Otro sensor1
+// Otro sensor
 DeviceAddress sensor2 = {0x28, 0xE5, 0xE0, 0xAF, 0x33, 0x14, 0x01, 0x86};
 
 //       \\\\\\\\\\\\////////////
@@ -38,10 +51,10 @@ DeviceAddress sensor2 = {0x28, 0xE5, 0xE0, 0xAF, 0x33, 0x14, 0x01, 0x86};
 //       ///////////\\\\\\\\\\
 
 bool errorTemp = true;
-float temp1 = 0;
-float temp2 = 0;
-int valFan1 = 0;
-int valFan2 = 0;
+int temp=0, temp1=0, temp2=0;
+int minSetTemp = 4500, maxSetTemp = 7000, offSetTemp = 4000;
+bool onFan = false;
+int valfan=0;
 
 //       \\\\\\\\\\\//////////
 //        \\ END VARIABLES //
@@ -49,29 +62,47 @@ int valFan2 = 0;
 
 void setup(){
   Serial.begin(9600);
-  fan1.begin(317);
+  fan.begin();
   DS18B20.begin();
 }
 
 void loop(){
-  if ((errorSensor(sensor1))||(errorSensor(sensor2))){
-    errorTemp = true;
-  }
-  if (!errorTemp){
-    errorTemp = false;
-    temp1 = readFloat(sensor1);
-    temp2 = readFloat(sensor2);
-  }
 
-  if (errorTemp){ valFan1 = 50; valFan2 = 50;}
+  fan.write(valFan()); // write on pins 9 & 10 simultaneously.
 
-  fan1.write(valFan1);
-  fan2.write(valFan2);
+  Serial.print(" Sens1=");Serial.print(temp1);
+  Serial.print(" Sens2=");Serial.print(temp2);
+  Serial.print(" Temp=");Serial.print(temp);
+  Serial.print(" State=");Serial.print(onFan);
+  Serial.print(" Fan=");Serial.println(valFan());
+
+//  for (;;);
 }
 
 //         /////////\\\\\\\\
 //        //   FUNCTIONS   \\
 //       ///////////\\\\\\\\\\
+
+int valFan ()
+{
+  if (errorSensor(sensor1) || errorSensor(sensor2)){
+    valfan = 50;
+    errorTemp = true;
+    Serial.print(" ERROR");}
+  else errorTemp = false;
+
+  if (!errorTemp){
+    temp1 = readInt(sensor1);
+    temp2 = readInt(sensor2);
+    temp = max(temp1, temp2);
+
+    if (temp >= minSetTemp) onFan = true;
+    if (temp < offSetTemp) onFan = false, valfan = 0;
+    if (temp > maxSetTemp) temp = maxSetTemp;
+    if (onFan)valfan = map(temp, offSetTemp, maxSetTemp, 30, 317);
+  }
+  return valfan;
+}
 
 bool errorSensor (int sensor){
   DS18B20.requestTemperatures();
@@ -83,6 +114,18 @@ float readFloat (int sensor){
   DS18B20.requestTemperatures();
   float tmp = DS18B20.getTempC(sensor);
   return tmp;
+}
+
+int readInt (int sensor){
+  DS18B20.requestTemperatures();
+  int tmp = DS18B20.getTempC(sensor)*100;
+  return tmp;
+}
+
+float result (int tmpInt){
+  float tempResult = tmpInt;
+  tempResult = tempResult/100;
+  return tempResult;
 }
 
 //       \\\\\\\\\\\//////////

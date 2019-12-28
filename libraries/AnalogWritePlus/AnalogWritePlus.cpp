@@ -190,7 +190,7 @@ void AnalogWritePlus::calibMax(int calMax)
   */
 }
 
-void AnalogWritePlus::write(byte value)
+void AnalogWritePlus::write(int value)
 {
 	_value=value;
 
