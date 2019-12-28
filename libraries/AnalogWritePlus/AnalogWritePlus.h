@@ -55,7 +55,7 @@ class AnalogWritePlus
       void begin(int top);
 			void calibMin(int calMin);
       void calibMax(int calMax);
-      void write(byte value);
+      void write(int value);
 			
 	private:
       byte _dev;
