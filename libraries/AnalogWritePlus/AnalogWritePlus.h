@@ -65,7 +65,7 @@ class AnalogWritePlus
       int _top;
       int _calMin;
       int _calMax;
-			byte _value;
+			int _value;
 			
 };
 
