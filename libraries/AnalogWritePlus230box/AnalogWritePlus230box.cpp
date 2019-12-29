@@ -16,13 +16,10 @@
 
 
 
-AnalogWritePlus230box::AnalogWritePlus230box(int top)
+void AnalogWritePlus230box::begin(int top)
 {
 	_top=top;
-}
 
-void AnalogWritePlus230box::begin()
-{
   TCCR1A = 0;
   TCCR1B = 0;
   TCNT1 = 0;
