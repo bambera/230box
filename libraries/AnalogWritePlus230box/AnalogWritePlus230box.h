@@ -16,9 +16,8 @@
 class AnalogWritePlus230box
 {
 	public:
-			AnalogWritePlus230box(int top);
 			AnalogWritePlus230box;
-      void begin();
+      void begin(int top);
       void write(int value);
 
 	private:

@@ -30,7 +30,7 @@
 #include "OneWire.h"
 #include "DallasTemperature.h"
 
-AnalogWritePlus230box fan(317);
+AnalogWritePlus230box fan;
 
 const int pinOneWire = 2;
 
@@ -62,7 +62,7 @@ int valfan=0;
 
 void setup(){
   Serial.begin(9600);
-  fan.begin();
+  fan.begin(317);
   DS18B20.begin();
 }
 
