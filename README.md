@@ -106,3 +106,56 @@ La comunicación se realiza através de un módulo SPI to CANbus. Esto mantiene 
     along with this 230box, see COPYING.  If not, see <https://www.gnu.org/licenses/>.
 
     You can download a full copy of 230box at <https://github.com/c2mismo>.
+
+
+
+
+  EXCLUDED CODE:
+    The code described below and contained in the 230box Source Code,
+    is not part of the Program covered by the GPL and is expressly excluded
+    from its terms.  You are solely responsible for obtaining from
+    the copyright holder a license for such code and complying with
+    the applicable license terms.
+    THIS SOFTWARE THAT IS DESCRIBED BELOW IS A SOFTWARE CREATED BY
+    THIRD PARTIES, THIS EQUIPMENT IS NOT CONTRIBUTED OR MODIFIED
+    IN ANY LINE, THEREFORE WE WILL NOT BE LIABLE FOR ANY CLAIM,
+    BE FOR DAMAGES OR OTHER LIABILITY.
+
+  DallasTemperature library
+---------------------------------------------------------------------------
+  lines   files
+  885     libraries/DallasTemperature/DallasTemperature.cpp
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+
+  OneWire library v2.3
+---------------------------------------------------------------------------
+  lines   files
+  580     libraries/OneWire/OneWire.cpp
+  Copyright (C) 2000 Dallas Semiconductor Corporation, All Rights Reserved.
+
+  Permission is hereby granted, free of charge, to any person obtaining a
+  copy of this software and associated documentation files (the "Software"),
+  to deal in the Software without restriction, including without limitation
+  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+  and/or sell copies of the Software, and to permit persons to whom the
+  Software is furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included
+  in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY,  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  IN NO EVENT SHALL DALLAS SEMICONDUCTOR BE LIABLE FOR ANY CLAIM, DAMAGES
+  OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+  ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+  OTHER DEALINGS IN THE SOFTWARE.
+
+  Except as contained in this notice, the name of Dallas Semiconductor
+  shall not be used except as stated in the Dallas Semiconductor
+  Branding Policy.
