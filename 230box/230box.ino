@@ -12,30 +12,59 @@
 //        //   LIBRARY CONF   \\
 //       ////////////\\\\\\\\\\\\
 
-#include "Arduino.h"
+// #include "Arduino.h"
 
 //       \\\\\\\\\\\\////////////
 //        \\ END LIBRARY CONF //
 //         \\\\\\\\\\//////////
 
 //         /////////\\\\\\\\
-//        //   VARIABLES   \\
+//        //     PINS      \\
 //       ///////////\\\\\\\\\\
 
-int ledLeftIn = 40;
-int ledLeftOut = 41;
-int ledRightIn = 42;
-int ledRightOut = 43;
-int ledInverted = 46;
-int ledCHR = 47;
-int ledHome = 48;
-int ledAutomatic = 49;
+static const int signalOn = A0;
+static const int signalHome = 4;
+
+static const int signalAmper = A8;
+static const int signalRight = A9;
+static const int signalLeft = A10;
+static const int signalIn = A11;
+
+static const int ledLeftIn = 40;
+static const int ledLeftOut = 41;
+static const int ledRightIn = 42;
+static const int ledRightOut = 43;
+static const int ledInverted = 46;
+static const int ledCHR = 47;
+static const int ledHome = 48;
+static const int ledAutomatic = 49;
+
+static const int releRightIn = A1;
+static const int releLeftIn = A2;
+static const int releRightOut = A3;
+static const int releLeftOut = A4;
+static const int releHome = A5;
+static const int releCHR = A6;
+
+
+//       \\\\\\\\\\\//////////
+//        \\    END PINS   //
+//         \\\\\\\\\////////
+
+//         /////////\\\\\\\\
+//        //   VARIABLES   \\
+//       ///////////\\\\\\\\\\
 
 //       \\\\\\\\\\\//////////
 //        \\ END VARIABLES //
 //         \\\\\\\\\////////
 
 void setup(){
+  pinMode(signalOn, INPUT);
+  pinMode(signalHome, INPUT);
+
+  pinMode(signalAmper, INPUT);
+
   pinMode(ledLeftIn, OUTPUT);
   pinMode(ledLeftOut, OUTPUT);
   pinMode(ledRightIn, OUTPUT);
@@ -44,8 +73,14 @@ void setup(){
   pinMode(ledCHR, OUTPUT);
   pinMode(ledHome, OUTPUT);
   pinMode(ledAutomatic, OUTPUT);
-  pinMode(ledTest, OUTPUT);
   blink();
+
+  pinMode(releRightIn, OUTPUT);
+  pinMode(releLeftIn, OUTPUT);
+  pinMode(releRightOut, OUTPUT);
+  pinMode(releLeftOut, OUTPUT);
+  pinMode(releHome, OUTPUT);
+  pinMode(releCHR, OUTPUT);
 }
 
 void loop(){
@@ -55,7 +90,6 @@ void loop(){
 //         /////////\\\\\\\\
 //        //   FUNCTIONS   \\
 //       ///////////\\\\\\\\\\
-
 
 void blink() {
   digitalWrite(ledLeftIn, HIGH);
