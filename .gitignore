@@ -20,6 +20,8 @@
 !.git
 !.gitignore
 
+tests
+
 
 # Fnt. https://github.com/github/gitignore/blob/master/Global/Linux.gitignore
 
