@@ -26,8 +26,8 @@ static const int signalOn = A0;
 static const int signalHome = 4;
 
 static const int signalAmper = A8;
-static const int signalRight = A9;
-static const int signalLeft = A10;
+static const int signalLeft = A9;
+static const int signalRight = A10;
 static const int signalIn = A11;
 
 static const int ledLeftIn = 40;
@@ -60,6 +60,8 @@ static const int releCHR = A6;
 //         \\\\\\\\\////////
 
 void setup(){
+  Serial.begin(9600);
+
   pinMode(signalOn, INPUT);
   pinMode(signalHome, INPUT);
 
@@ -84,7 +86,6 @@ void setup(){
 }
 
 void loop(){
-  
 }
 
 //         /////////\\\\\\\\
