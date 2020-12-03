@@ -38,6 +38,7 @@ static const int ledInverted = 46;
 static const int ledCHR = 47;
 static const int ledHome = 48;
 static const int ledAutomatic = 49;
+static const int leds[9] = {ledLeftIn, ledLeftOut, ledRightIn, ledRightOut, ledInverted, ledCHR, ledHome, ledAutomatic};
 
 static const int releRightIn = A1;
 static const int releLeftIn = A2;
@@ -67,6 +68,13 @@ void setup(){
 
   pinMode(signalAmper, INPUT);
 
+  pinMode(releRightIn, OUTPUT);
+  pinMode(releLeftIn, OUTPUT);
+  pinMode(releRightOut, OUTPUT);
+  pinMode(releLeftOut, OUTPUT);
+  pinMode(releHome, OUTPUT);
+  pinMode(releCHR, OUTPUT);
+
   pinMode(ledLeftIn, OUTPUT);
   pinMode(ledLeftOut, OUTPUT);
   pinMode(ledRightIn, OUTPUT);
@@ -76,13 +84,6 @@ void setup(){
   pinMode(ledHome, OUTPUT);
   pinMode(ledAutomatic, OUTPUT);
   blink();
-
-  pinMode(releRightIn, OUTPUT);
-  pinMode(releLeftIn, OUTPUT);
-  pinMode(releRightOut, OUTPUT);
-  pinMode(releLeftOut, OUTPUT);
-  pinMode(releHome, OUTPUT);
-  pinMode(releCHR, OUTPUT);
 }
 
 void loop(){
@@ -93,62 +94,36 @@ void loop(){
 //       ///////////\\\\\\\\\\
 
 void blink() {
-  digitalWrite(ledLeftIn, HIGH);
-  digitalWrite(ledLeftOut, HIGH);
-  digitalWrite(ledRightIn, HIGH);
-  digitalWrite(ledRightOut, HIGH);
-  digitalWrite(ledInverted, HIGH);
-  digitalWrite(ledCHR, HIGH);
-  digitalWrite(ledHome, HIGH);
-  digitalWrite(ledAutomatic, HIGH);
+  for (byte i = 0; i < 9; i++)
+  {
+    digitalWrite(leds[i], HIGH);
+    delay(200);
+  }
   delay(1500);
-  digitalWrite(ledLeftIn, LOW);
-  digitalWrite(ledLeftOut, LOW);
-  digitalWrite(ledRightIn, LOW);
-  digitalWrite(ledRightOut, LOW);
-  digitalWrite(ledInverted, LOW);
-  digitalWrite(ledCHR, LOW);
-  digitalWrite(ledHome, LOW);
-  digitalWrite(ledAutomatic, LOW);
+  for (byte i = 0; i < 9; i++)
+  {
+    digitalWrite(leds[i], LOW);
+  }
   delay(1000);
-
-  digitalWrite(ledLeftIn, HIGH);
-  digitalWrite(ledLeftOut, HIGH);
-  digitalWrite(ledRightIn, HIGH);
-  digitalWrite(ledRightOut, HIGH);
-  digitalWrite(ledInverted, HIGH);
-  digitalWrite(ledCHR, HIGH);
-  digitalWrite(ledHome, HIGH);
-  digitalWrite(ledAutomatic, HIGH);
+  for (byte i = 0; i < 9; i++)
+  {
+    digitalWrite(leds[i], HIGH);
+  }
   delay(1500);
-  digitalWrite(ledLeftIn, LOW);
-  digitalWrite(ledLeftOut, LOW);
-  digitalWrite(ledRightIn, LOW);
-  digitalWrite(ledRightOut, LOW);
-  digitalWrite(ledInverted, LOW);
-  digitalWrite(ledCHR, LOW);
-  digitalWrite(ledHome, LOW);
-  digitalWrite(ledAutomatic, LOW);
+  for (byte i = 0; i < 9; i++)
+  {
+    digitalWrite(leds[i], LOW);
+  }
   delay(1000);
-
-  digitalWrite(ledLeftIn, HIGH);
-  digitalWrite(ledLeftOut, HIGH);
-  digitalWrite(ledRightIn, HIGH);
-  digitalWrite(ledRightOut, HIGH);
-  digitalWrite(ledInverted, HIGH);
-  digitalWrite(ledCHR, HIGH);
-  digitalWrite(ledHome, HIGH);
-  digitalWrite(ledAutomatic, HIGH);
+  for (byte i = 0; i < 9; i++)
+  {
+    digitalWrite(leds[i], HIGH);
+  }
   delay(3000);
-
-  digitalWrite(ledLeftIn, LOW);
-  digitalWrite(ledLeftOut, LOW);
-  digitalWrite(ledRightIn, LOW);
-  digitalWrite(ledRightOut, LOW);
-  digitalWrite(ledInverted, LOW);
-  digitalWrite(ledCHR, LOW);
-  digitalWrite(ledHome, LOW);
-  digitalWrite(ledAutomatic, LOW);
+  for (byte i = 0; i < 9; i++)
+  {
+    digitalWrite(leds[i], LOW);
+  }
 }
 
 //       \\\\\\\\\\\//////////
