@@ -1,6 +1,7 @@
  /*
  * State testing, developer c2mismo 2019.
  * License GNU, see at the end.
+ * 
  */
 
 //         //////////\\\\\\\\\\
