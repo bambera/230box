@@ -1,6 +1,0 @@
-AnalogWritePus KEYWORD1
-begin KEYWORD2
-write KEYWORD2
-top LITERAL1
-value LITERAL1
-
