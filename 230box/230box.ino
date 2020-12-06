@@ -12,7 +12,8 @@
 //        //   LIBRARY CONF   \\
 //       ////////////\\\\\\\\\\\\
 
-// #include "Arduino.h"
+#include <Arduino.h>
+#include "Leds.h"
 
 //       \\\\\\\\\\\\////////////
 //        \\ END LIBRARY CONF //
@@ -34,11 +35,12 @@ const int ledLeftIn = 40;
 const int ledLeftOut = 41;
 const int ledRightIn = 42;
 const int ledRightOut = 43;
-const int ledInverted = 44;
+const int ledInverter = 44;
 const int ledCHR = 45;
 const int ledHome = 46;
 const int ledAutomatic = 47;
-const int leds[9] = {ledLeftIn, ledLeftOut, ledRightIn, ledRightOut, ledInverted, ledCHR, ledHome, ledAutomatic};
+
+Leds leds (ledLeftIn, ledLeftOut, ledRightIn, ledRightOut, ledInverter, ledCHR, ledHome, ledAutomatic);
 
 const int releRightIn = A1;
 const int releLeftIn = A2;
@@ -47,6 +49,7 @@ const int releLeftOut = A4;
 const int releHome = A5;
 const int releCHR = A7;
 const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHome, releCHR};
+
 
 
 //       \\\\\\\\\\\//////////
@@ -76,15 +79,7 @@ void setup(){
   pinMode(releHome, OUTPUT);
   pinMode(releCHR, OUTPUT);
 
-  pinMode(ledLeftIn, OUTPUT);
-  pinMode(ledLeftOut, OUTPUT);
-  pinMode(ledRightIn, OUTPUT);
-  pinMode(ledRightOut, OUTPUT);
-  pinMode(ledInverted, OUTPUT);
-  pinMode(ledCHR, OUTPUT);
-  pinMode(ledHome, OUTPUT);
-  pinMode(ledAutomatic, OUTPUT);
-  blink();
+  leds.blinkOn();
 }
 
 void loop(){
@@ -94,38 +89,7 @@ void loop(){
 //        //   FUNCTIONS   \\
 //       ///////////\\\\\\\\\\
 
-void blink() {
-  for (byte i = 0; i < 9; i++)
-  {
-    digitalWrite(leds[i], HIGH);
-    delay(200);
-  }
-  delay(1500);
-  for (byte i = 0; i < 9; i++)
-  {
-    digitalWrite(leds[i], LOW);
-  }
-  delay(1000);
-  for (byte i = 0; i < 9; i++)
-  {
-    digitalWrite(leds[i], HIGH);
-  }
-  delay(1500);
-  for (byte i = 0; i < 9; i++)
-  {
-    digitalWrite(leds[i], LOW);
-  }
-  delay(1000);
-  for (byte i = 0; i < 9; i++)
-  {
-    digitalWrite(leds[i], HIGH);
-  }
-  delay(3000);
-  for (byte i = 0; i < 9; i++)
-  {
-    digitalWrite(leds[i], LOW);
-  }
-}
+
 
 //       \\\\\\\\\\\//////////
 //        \\ END FUNCTIONS //
