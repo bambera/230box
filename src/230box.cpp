@@ -1,23 +1,16 @@
  /*
  * State testing, developer c2mismo 2019.
  * License GNU, see at the end.
- * 
  */
 
-//         //////////\\\\\\\\\\
-//        //   LIBRARY CONF   \\
-//       ////////////\\\\\\\\\\\\
+//           LIBRARY CONF   
 
 #include <Arduino.h>
 #include "Leds.h"
 
-//       \\\\\\\\\\\\////////////
-//        \\ END LIBRARY CONF //
-//         \\\\\\\\\\//////////
+//         END LIBRARY CONF
 
-//         /////////\\\\\\\\
-//        //     PINS      \\
-//       ///////////\\\\\\\\\\
+//             PINS
 
 const int signalOn = A0;
 const int signalHome = 5;
@@ -46,19 +39,10 @@ const int releHome = A5;
 const int releCHR = A7;
 const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHome, releCHR};
 
+//            END PINS
 
-
-//       \\\\\\\\\\\//////////
-//        \\    END PINS   //
-//         \\\\\\\\\////////
-
-//         /////////\\\\\\\\
-//        //   VARIABLES   \\
-//       ///////////\\\\\\\\\\
-
-//       \\\\\\\\\\\//////////
-//        \\ END VARIABLES //
-//         \\\\\\\\\////////
+//           VARIABLES
+//         END VARIABLES
 
 void setup(){
   Serial.begin(9600);
@@ -81,15 +65,8 @@ void setup(){
 void loop(){
 }
 
-//         /////////\\\\\\\\
-//        //   FUNCTIONS   \\
-//       ///////////\\\\\\\\\\
-
-
-
-//       \\\\\\\\\\\//////////
-//        \\ END FUNCTIONS //
-//         \\\\\\\\\////////
+//           FUNCTIONS
+//         END FUNCTIONS
 
 /*
   License:
