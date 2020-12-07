@@ -20,7 +20,12 @@
 !.git
 !.gitignore
 
-tests
+
+# vscode & platformIO
+.vscode
+.pio
+test
+dependencies
 
 
 # Fnt. https://github.com/github/gitignore/blob/master/Global/Linux.gitignore
@@ -58,4 +63,3 @@ secring.*
 
 *.patch
 *.diff
-
