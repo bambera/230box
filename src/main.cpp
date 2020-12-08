@@ -7,6 +7,7 @@
 
 #include "Arduino.h"
 #include "Leds.h"
+#include "Voltmeter.h"
 
 //         END LIBRARY CONF
 
@@ -15,10 +16,10 @@
 const int signalOn = A0;
 const int signalHome = 5;
 
-const int signalAmper = A8;
-const int signalLeft = A9;
-const int signalRight = A10;
-const int signalIn = A11;
+const int amperemeter = A8;
+const int voltLeft = A9;
+const int voltRight = A10;
+const int voltIn = A11;
 
 const int ledLeftIn = 40;
 const int ledLeftOut = 41;
@@ -42,6 +43,12 @@ const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHo
 //            END PINS
 
 //           VARIABLES
+const int resetVolt = 512;
+int waves = 5; // Numeros de ondas para leer
+int freq = 20;      // 50 Hz = 20 m/s; 60 Hz = 16.6667 m/s
+
+Voltmeter voltmeterLeft (voltLeft, freq, waves);
+
 //         END VARIABLES
 
 void setup(){
@@ -50,7 +57,7 @@ void setup(){
   pinMode(signalOn, INPUT);
   pinMode(signalHome, INPUT_PULLUP);
 
-  pinMode(signalAmper, INPUT);
+  pinMode(amperemeter, INPUT);
 
   pinMode(releRightIn, OUTPUT);
   pinMode(releLeftIn, OUTPUT);
@@ -63,6 +70,18 @@ void setup(){
 }
 
 void loop(){
+
+  int valIn = voltmeterLeft.getValue();
+  int volIn = voltmeterLeft.getVoltage();
+
+  Serial.print(" Value    : ");
+  Serial.println(valIn);
+  Serial.print(" Voltage  : ");
+  Serial.println(volIn);
+  Serial.println();Serial.println("************************************************");
+  Serial.println();Serial.println("************************************************");Serial.println();
+
+  delay(1000);
 }
 
 //           FUNCTIONS
