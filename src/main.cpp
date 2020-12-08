@@ -17,9 +17,6 @@ const int signalOn = A0;
 const int signalHome = 5;
 
 const int amperemeter = A8;
-const int voltLeft = A9;
-const int voltRight = A10;
-const int voltIn = A11;
 
 const int ledLeftIn = 40;
 const int ledLeftOut = 41;
@@ -43,11 +40,25 @@ const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHo
 //            END PINS
 
 //           VARIABLES
-const int resetVolt = 512;
-int waves = 5; // Numeros de ondas para leer
+//           Voltimetros
+
+const int voltLeft = A9;
+const int voltRight = A10;
+const int voltIn = A11;
+
 int freq = 20;      // 50 Hz = 20 m/s; 60 Hz = 16.6667 m/s
 
-Voltmeter voltmeterLeft (voltLeft, freq, waves);
+int calibratedLeft = 740;
+int realVoltageLeft = 220;
+Voltmeter voltmeterLeft (voltLeft, freq, calibratedLeft, realVoltageLeft);
+
+int calibratedRight = 739;
+int realVoltageRight = 223;
+Voltmeter voltmeterRight (voltRight, freq, calibratedRight, realVoltageRight);
+
+int calibratedIn = 740;
+int realVoltageIn = 220;
+Voltmeter voltmeterIn (voltIn, freq, calibratedIn, realVoltageIn);
 
 //         END VARIABLES
 
@@ -66,18 +77,34 @@ void setup(){
   pinMode(releHome, OUTPUT);
   pinMode(releCHR, OUTPUT);
 
-  leds.blinkOn();
+  //leds.blinkOn();
 }
 
 void loop(){
 
-  int valIn = voltmeterLeft.getValue();
-  int volIn = voltmeterLeft.getVoltage();
+  digitalWrite(ledAutomatic, HIGH);
+
+  voltmeterLeft.get();
+  voltmeterRight.get();
+  voltmeterIn.get();
+  int val = voltmeterRight.getValue();
+  int vol = voltmeterRight.getVoltage();
 
   Serial.print(" Value    : ");
-  Serial.println(valIn);
+  Serial.println(val);
   Serial.print(" Voltage  : ");
-  Serial.println(volIn);
+  Serial.println(vol);
+  if (voltmeterIn.getReady())
+  {
+    Serial.print("            Encendido");
+    digitalWrite(ledRightIn, HIGH);
+  } else {
+    Serial.print("            Apagado");
+    digitalWrite(ledInverter, LOW);
+  }
+
+  digitalWrite(releRightIn, HIGH);
+
   Serial.println();Serial.println("************************************************");
   Serial.println();Serial.println("************************************************");Serial.println();
 
