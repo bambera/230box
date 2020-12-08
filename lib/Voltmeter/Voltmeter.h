@@ -9,6 +9,7 @@ class Voltmeter {
 
 	public:
 		Voltmeter(const int sensorPin, const int freq, const int waves);
+		Voltmeter(const int sensorPin, const int freq, const int waves, const int calibrated, const int realVoltage);
 
 		int realVoltage;
 		int calibrated;

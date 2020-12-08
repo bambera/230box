@@ -10,6 +10,16 @@ Voltmeter::Voltmeter(const int sensorPin, const int freq, const int waves)
   _waves = waves;
 }
 
+Voltmeter::Voltmeter(const int sensorPin, const int freq, const int waves, const int calibrated, const int realVoltage)
+
+{
+  _calibrated = calibrated;
+  _realVoltage = realVoltage;
+  _sensor = sensorPin;
+  _freq = freq;  // + 5
+  _waves = waves;
+}
+
 void Voltmeter::get()
 {
   _maxVal = 0;
