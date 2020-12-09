@@ -3,50 +3,40 @@
 
 Voltmeter::Voltmeter(const int sensorPin, const int freq)
 {
-  _calibrated = 757;
-  _realVoltage = 224;
   _sensor = sensorPin;
   _freq = freq;
 }
 
-Voltmeter::Voltmeter(const int sensorPin, const int freq, const int calibrated, const int realVoltage)
-
-{
-  _calibrated = calibrated;
-  _realVoltage = realVoltage;
-  _sensor = sensorPin;
-  _freq = freq +1;
-}
-
 void Voltmeter::get()
 {
-  _maxValue = 0;
-  _minValue = 0;
-  _maxVal = 0;
-  _minVal = 1024;
-  _tMax = millis() + _freq;
+  _maxVal = 0.00;
+  _minVal = 1024.00;
+  _tActu = (unsigned long)millis();
+  _tMax = _tActu + _freq;
 
-  for (_tActu = millis(); _tMax > _tActu; _tActu = millis()){
-    _s = analogRead(_sensor);
-    if (_s > _maxVal)_maxVal = _s;
-    if (_s < _minVal) _minVal = _s;
+  for (_tActu = _tActu; _tMax > _tActu; _tActu = (unsigned long)millis()){
+    _Y = (float)analogRead(_sensor);
+    _S = (_alpha*_Y)+((1-_alpha)*_S);
+    if (_S > _maxVal)_maxVal = _S;
+    if (_S < _minVal) _minVal = _S;
   }
   _average = (_maxVal - _minVal) / 2 + _minVal;
 }
 
-int Voltmeter::getValue()
+float Voltmeter::getValue()
 {
   return _maxVal;
 }
 
-int Voltmeter::getAverage()
+float Voltmeter::getAverage()
 {
   return _average;
 }
 
-int Voltmeter::getVoltage()
+float Voltmeter::getVoltage()
 {
-  _voltage = map (_maxVal, _average, _calibrated, 0, _realVoltage);
+  _R = (_maxVal - _average)*10;
+  _voltage = (float)_R/10;
   return _voltage;
 }
 

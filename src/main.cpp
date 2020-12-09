@@ -48,22 +48,14 @@ const int voltIn = A11;
 
 int freq = 20;      // 50 Hz = 20 m/s; 60 Hz = 16.6667 m/s
 
-int calibratedLeft = 740;
-int realVoltageLeft = 220;
-Voltmeter voltmeterLeft (voltLeft, freq, calibratedLeft, realVoltageLeft);
-
-int calibratedRight = 739;
-int realVoltageRight = 223;
-Voltmeter voltmeterRight (voltRight, freq, calibratedRight, realVoltageRight);
-
-int calibratedIn = 740;
-int realVoltageIn = 220;
-Voltmeter voltmeterIn (voltIn, freq, calibratedIn, realVoltageIn);
+Voltmeter voltmeterLeft (voltLeft, freq);
+Voltmeter voltmeterRight (voltRight, freq);
+Voltmeter voltmeterIn (voltIn, freq);
 
 //         END VARIABLES
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pinMode(signalOn, INPUT);
   pinMode(signalHome, INPUT_PULLUP);
@@ -83,32 +75,30 @@ void setup(){
 void loop(){
 
   digitalWrite(ledAutomatic, HIGH);
+  digitalWrite(releRightIn, HIGH);
 
   voltmeterLeft.get();
   voltmeterRight.get();
   voltmeterIn.get();
-  int val = voltmeterRight.getValue();
-  int vol = voltmeterRight.getVoltage();
+  float val = voltmeterLeft.getValue();
+  float vol = voltmeterLeft.getVoltage();
 
-  Serial.print(" Value    : ");
-  Serial.println(val);
   Serial.print(" Voltage  : ");
   Serial.println(vol);
-  if (voltmeterIn.getReady())
+  if (voltmeterLeft.getReady())
   {
-    Serial.print("            Encendido");
-    digitalWrite(ledRightIn, HIGH);
+    Serial.println("            Encendido");
+    digitalWrite(ledLeftIn, HIGH);
   } else {
-    Serial.print("            Apagado");
-    digitalWrite(ledInverter, LOW);
+    Serial.println("            Apagado");
+    digitalWrite(ledLeftIn, LOW);
   }
 
-  digitalWrite(releRightIn, HIGH);
 
-  Serial.println();Serial.println("************************************************");
-  Serial.println();Serial.println("************************************************");Serial.println();
 
-  delay(1000);
+  Serial.println();Serial.println("************************");
+
+  delay(1200);
 }
 
 //           FUNCTIONS
