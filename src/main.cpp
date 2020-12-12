@@ -6,8 +6,14 @@
 //           LIBRARY CONF   
 
 #include "Arduino.h"
+#include <SPI.h>
 #include "Leds.h"
 #include "Voltmeter.h"
+#include "mcp2515.h"
+
+struct can_frame canMsgValue;
+struct can_frame canMsgState;
+MCP2515 mcp2515(53);
 
 //         END LIBRARY CONF
 
@@ -16,6 +22,9 @@
 const int signalOn = A0;
 const int signalHome = 5;
 
+const int voltLeft = A9;
+const int voltRight = A10;
+const int voltIn = A11;
 const int amperemeter = A8;
 
 const int ledLeftIn = 40;
@@ -42,12 +51,15 @@ const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHo
 //           VARIABLES
 //           Voltimetros
 
-const int voltLeft = A9;
-const int voltRight = A10;
-const int voltIn = A11;
+bool stateLeftIn = false;
+bool stateLeftOut = false;
+bool stateRightIn = false;
+bool stateRightOut = false;
+bool stateCHR = false;
+bool stateHome = false;
+bool stateInverter = false;
 
 int freq = 20;      // 50 Hz = 20 m/s; 60 Hz = 16.6667 m/s
-
 Voltmeter voltmeterLeft (voltLeft, freq);
 Voltmeter voltmeterRight (voltRight, freq);
 Voltmeter voltmeterIn (voltIn, freq);
@@ -55,7 +67,18 @@ Voltmeter voltmeterIn (voltIn, freq);
 //         END VARIABLES
 
 void setup(){
+  while (!Serial);
   Serial.begin(115200);
+  SPI.begin();
+
+  mcp2515.reset();
+  mcp2515.setBitrate (CAN_500KBPS, MCP_8MHZ);
+  mcp2515.setNormalMode();
+
+  canMsgValue.can_id = 0x036;
+  canMsgValue.can_dlc = 4;
+  canMsgState.can_id = 0x037;
+  canMsgState.can_dlc = 7;
 
   pinMode(signalOn, INPUT);
   pinMode(signalHome, INPUT_PULLUP);
@@ -75,30 +98,47 @@ void setup(){
 void loop(){
 
   digitalWrite(ledAutomatic, HIGH);
-  digitalWrite(releRightIn, HIGH);
 
   voltmeterLeft.get();
+  float voltageLeft = voltmeterLeft.getVoltage();
   voltmeterRight.get();
+  float voltageRight = voltmeterRight.getVoltage();
   voltmeterIn.get();
-  float val = voltmeterLeft.getValue();
-  float vol = voltmeterLeft.getVoltage();
-
-  Serial.print(" Voltage  : ");
-  Serial.println(vol);
-  if (voltmeterLeft.getReady())
-  {
-    Serial.println("            Encendido");
-    digitalWrite(ledLeftIn, HIGH);
+  float voltageIn = voltmeterIn.getVoltage();
+  if (voltageLeft >= 255) {
+    canMsgValue.data[0] = 255;
   } else {
-    Serial.println("            Apagado");
-    digitalWrite(ledLeftIn, LOW);
+    canMsgValue.data[0] = (byte)voltageLeft;
+  }
+  
+  if (voltageRight >= 255) {
+    canMsgValue.data[1] = 255;
+  } else {
+    canMsgValue.data[1] = (byte)voltageRight;
   }
 
+  if (voltageIn >= 255) {
+    canMsgValue.data[2] = 255;
+  } else {
+    canMsgValue.data[2] = (byte)voltageIn;
+  }
 
+  canMsgValue.data[3] = 0x00; // Reserved for Ampermeter
 
-  Serial.println();Serial.println("************************");
+  canMsgState.data[0] = stateLeftIn;
+  canMsgState.data[1] = stateLeftOut;
+  canMsgState.data[2] = stateRightIn;
+  canMsgState.data[3] = stateRightOut;
+  canMsgState.data[4] = stateCHR;
+  canMsgState.data[5] = stateHome;
 
-  delay(1200);
+  stateInverter = true;
+  canMsgState.data[6] = stateInverter;
+
+  mcp2515.sendMessage(&canMsgValue);
+  mcp2515.sendMessage(&canMsgState);
+
+  //delay(1200);
 }
 
 //           FUNCTIONS
