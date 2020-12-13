@@ -144,13 +144,6 @@ void loop(){
     signalRight = canMsg12_230.data[1];
   }
   // END rear data from 12box
-  Serial.print(" byteVoltageLeft: ");
-  Serial.println(byteVoltageLeft);
-  Serial.print(" byteVoltageRight: ");
-  Serial.println(byteVoltageRight);
-  Serial.print(" byteVoltageIn: ");
-  Serial.println(byteVoltageIn);
-  Serial.println("***************");
 
   msgValue(byteVoltageLeft, byteVoltageRight, byteVoltageIn, byteAmperage);
   msgState(stateAutomatic, stateLeftIn, stateLeftOut, stateRightIn, stateRightOut, stateCHR, stateHome, stateInverter);
