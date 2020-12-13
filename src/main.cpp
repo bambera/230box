@@ -16,6 +16,29 @@ struct can_frame canMsgState230_12;
 struct can_frame canMsg12_230;
 MCP2515 mcp2515(53);
 
+//  Read canBus 12box Signals
+bool signalLeft;
+bool signalRight;
+//  END read canBus 12box Signals
+
+//  Send canBus 12box Values
+byte byteVoltageLeft;
+byte byteVoltageRight;
+byte byteVoltageIn;
+byte byteAmperage;
+//  END send canBus 12box Values
+
+//  Send canBus 12box States
+bool stateAutomatic = false;
+bool stateLeftIn = false;
+bool stateLeftOut = false;
+bool stateRightIn = false;
+bool stateRightOut = false;
+bool stateCHR = false;
+bool stateHome = false;
+bool stateInverter = false;
+//  END send canBus 12box States
+
 //         END LIBRARY CONF
 
 //             PINS
@@ -50,15 +73,6 @@ const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHo
 //            END PINS
 
 //           VARIABLES
-
-bool stateAutomatic = false;
-bool stateLeftIn = false;
-bool stateLeftOut = false;
-bool stateRightIn = false;
-bool stateRightOut = false;
-bool stateCHR = false;
-bool stateHome = false;
-bool stateInverter = false;
 
 int freq = 20;      // 50 Hz = 20 m/s; 60 Hz = 16.6667 m/s
 Voltmeter voltmeterLeft (voltLeft, freq);
@@ -106,44 +120,44 @@ void setup(){
 void loop(){
 
   digitalWrite(ledAutomatic, HIGH);
+  digitalWrite(releLeftIn, HIGH);
 
   voltmeterLeft.get();
   float voltageLeft = voltmeterLeft.getVoltage();
+  byteVoltageLeft = voltageLeft;
+
   voltmeterRight.get();
   float voltageRight = voltmeterRight.getVoltage();
+  byteVoltageRight = voltageRight;
+
   voltmeterIn.get();
   float voltageIn = voltmeterIn.getVoltage();
-  byte amper = 0x00;
+  byteVoltageIn = voltageIn;
+
+  byteAmperage = 0x00;
   stateInverter = true;
 
+  // Rear data from 12box
   if (mcp2515.readMessage(&canMsg12_230) == MCP2515::ERROR_OK)
   {
-    byte stateBlank = canMsg12_230.data[0];
-    Serial.print(" Boton Blanco: ");
-    Serial.println(stateBlank);
+    signalLeft = canMsg12_230.data[0];
+    signalRight = canMsg12_230.data[1];
   }
+  // END rear data from 12box
+  Serial.print(" byteVoltageLeft: ");
+  Serial.println(byteVoltageLeft);
+  Serial.print(" byteVoltageRight: ");
+  Serial.println(byteVoltageRight);
+  Serial.print(" byteVoltageIn: ");
+  Serial.println(byteVoltageIn);
+  Serial.println("***************");
 
-
-  msgValue((byte)voltageLeft, (byte)voltageRight, (byte)voltageIn, amper);
+  msgValue(byteVoltageLeft, byteVoltageRight, byteVoltageIn, byteAmperage);
   msgState(stateAutomatic, stateLeftIn, stateLeftOut, stateRightIn, stateRightOut, stateCHR, stateHome, stateInverter);
-  //delay(1200);
+  delay(1200);
 }
 
 //           FUNCTIONS
-
-void msgState (byte stateAutomatic, byte stateLeftIn, byte stateLeftOut, byte stateRightIn, byte stateRightOut, byte stateCHR, byte stateHome, byte stateInverter)
-{
-  canMsgState230_12.data[0] = stateAutomatic;
-  canMsgState230_12.data[1] = stateLeftIn;
-  canMsgState230_12.data[2] = stateLeftOut;
-  canMsgState230_12.data[3] = stateRightIn;
-  canMsgState230_12.data[4] = stateRightOut;
-  canMsgState230_12.data[5] = stateCHR;
-  canMsgState230_12.data[6] = stateHome;
-  canMsgState230_12.data[7] = stateInverter;
-
-  mcp2515.sendMessage(&canMsgState230_12);
-}
 
 void msgValue (byte valueLeft, byte valueRight, byte valueIn, byte valueAmper)
 {
@@ -168,6 +182,20 @@ void msgValue (byte valueLeft, byte valueRight, byte valueIn, byte valueAmper)
   canMsgValue230_12.data[3] = valueAmper; // Reserved for Ampermeter
 
   mcp2515.sendMessage(&canMsgValue230_12);
+}
+
+void msgState (byte stateAutomatic, byte stateLeftIn, byte stateLeftOut, byte stateRightIn, byte stateRightOut, byte stateCHR, byte stateHome, byte stateInverter)
+{
+  canMsgState230_12.data[0] = stateAutomatic;
+  canMsgState230_12.data[1] = stateLeftIn;
+  canMsgState230_12.data[2] = stateLeftOut;
+  canMsgState230_12.data[3] = stateRightIn;
+  canMsgState230_12.data[4] = stateRightOut;
+  canMsgState230_12.data[5] = stateCHR;
+  canMsgState230_12.data[6] = stateHome;
+  canMsgState230_12.data[7] = stateInverter;
+
+  mcp2515.sendMessage(&canMsgState230_12);
 }
 
 //         END FUNCTIONS
