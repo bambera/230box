@@ -3,7 +3,7 @@
  * License GNU, see at the end.
  */
 
-//           LIBRARY CONF   
+//           LIBRARY CONF
 
 #include "Arduino.h"
 #include <SPI.h>
@@ -11,8 +11,9 @@
 #include "Voltmeter.h"
 #include "mcp2515.h"
 
-struct can_frame canMsgValue;
-struct can_frame canMsgState;
+struct can_frame canMsgValue230_12;
+struct can_frame canMsgState230_12;
+struct can_frame canMsg12_230;
 MCP2515 mcp2515(53);
 
 //         END LIBRARY CONF
@@ -49,8 +50,8 @@ const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHo
 //            END PINS
 
 //           VARIABLES
-//           Voltimetros
 
+bool stateAutomatic = false;
 bool stateLeftIn = false;
 bool stateLeftOut = false;
 bool stateRightIn = false;
@@ -66,6 +67,13 @@ Voltmeter voltmeterIn (voltIn, freq);
 
 //         END VARIABLES
 
+//       FUNCTIONS DECLARED
+
+void msgValue (byte, byte, byte, byte);
+void msgState (byte, byte, byte, byte, byte, byte, byte, byte);
+
+//       END FUNCTIONS DECLARED
+
 void setup(){
   while (!Serial);
   Serial.begin(115200);
@@ -75,10 +83,10 @@ void setup(){
   mcp2515.setBitrate (CAN_500KBPS, MCP_8MHZ);
   mcp2515.setNormalMode();
 
-  canMsgValue.can_id = 0x036;
-  canMsgValue.can_dlc = 4;
-  canMsgState.can_id = 0x037;
-  canMsgState.can_dlc = 7;
+  canMsgValue230_12.can_id = 0x036;
+  canMsgValue230_12.can_dlc = 4;
+  canMsgState230_12.can_id = 0x037;
+  canMsgState230_12.can_dlc = 8;
 
   pinMode(signalOn, INPUT);
   pinMode(signalHome, INPUT_PULLUP);
@@ -105,43 +113,63 @@ void loop(){
   float voltageRight = voltmeterRight.getVoltage();
   voltmeterIn.get();
   float voltageIn = voltmeterIn.getVoltage();
-  if (voltageLeft >= 255) {
-    canMsgValue.data[0] = 255;
-  } else {
-    canMsgValue.data[0] = (byte)voltageLeft;
-  }
-  
-  if (voltageRight >= 255) {
-    canMsgValue.data[1] = 255;
-  } else {
-    canMsgValue.data[1] = (byte)voltageRight;
-  }
-
-  if (voltageIn >= 255) {
-    canMsgValue.data[2] = 255;
-  } else {
-    canMsgValue.data[2] = (byte)voltageIn;
-  }
-
-  canMsgValue.data[3] = 0x00; // Reserved for Ampermeter
-
-  canMsgState.data[0] = stateLeftIn;
-  canMsgState.data[1] = stateLeftOut;
-  canMsgState.data[2] = stateRightIn;
-  canMsgState.data[3] = stateRightOut;
-  canMsgState.data[4] = stateCHR;
-  canMsgState.data[5] = stateHome;
-
+  byte amper = 0x00;
   stateInverter = true;
-  canMsgState.data[6] = stateInverter;
 
-  mcp2515.sendMessage(&canMsgValue);
-  mcp2515.sendMessage(&canMsgState);
+  if (mcp2515.readMessage(&canMsg12_230) == MCP2515::ERROR_OK)
+  {
+    byte stateBlank = canMsg12_230.data[0];
+    Serial.print(" Boton Blanco: ");
+    Serial.println(stateBlank);
+  }
 
+
+  msgValue((byte)voltageLeft, (byte)voltageRight, (byte)voltageIn, amper);
+  msgState(stateAutomatic, stateLeftIn, stateLeftOut, stateRightIn, stateRightOut, stateCHR, stateHome, stateInverter);
   //delay(1200);
 }
 
 //           FUNCTIONS
+
+void msgState (byte stateAutomatic, byte stateLeftIn, byte stateLeftOut, byte stateRightIn, byte stateRightOut, byte stateCHR, byte stateHome, byte stateInverter)
+{
+  canMsgState230_12.data[0] = stateAutomatic;
+  canMsgState230_12.data[1] = stateLeftIn;
+  canMsgState230_12.data[2] = stateLeftOut;
+  canMsgState230_12.data[3] = stateRightIn;
+  canMsgState230_12.data[4] = stateRightOut;
+  canMsgState230_12.data[5] = stateCHR;
+  canMsgState230_12.data[6] = stateHome;
+  canMsgState230_12.data[7] = stateInverter;
+
+  mcp2515.sendMessage(&canMsgState230_12);
+}
+
+void msgValue (byte valueLeft, byte valueRight, byte valueIn, byte valueAmper)
+{
+  if (valueLeft >= 255) {
+    canMsgValue230_12.data[0] = 255;
+  } else {
+    canMsgValue230_12.data[0] = valueLeft;
+  }
+
+  if (valueRight >= 255) {
+    canMsgValue230_12.data[1] = 255;
+  } else {
+    canMsgValue230_12.data[1] = valueRight;
+  }
+
+  if (valueIn >= 255) {
+    canMsgValue230_12.data[2] = 255;
+  } else {
+    canMsgValue230_12.data[2] = valueIn;
+  }
+
+  canMsgValue230_12.data[3] = valueAmper; // Reserved for Ampermeter
+
+  mcp2515.sendMessage(&canMsgValue230_12);
+}
+
 //         END FUNCTIONS
 
 /*
