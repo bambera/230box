@@ -3,11 +3,41 @@
  * License GNU, see at the end.
  */
 
-//           LIBRARY CONF   
+//           LIBRARY CONF
 
 #include "Arduino.h"
+#include <SPI.h>
 #include "Leds.h"
 #include "Voltmeter.h"
+#include "mcp2515.h"
+
+struct can_frame canMsgValue230_12;
+struct can_frame canMsgState230_12;
+struct can_frame canMsg12_230;
+MCP2515 mcp2515(53);
+
+//  Read canBus 12box Signals
+bool signalLeft;
+bool signalRight;
+//  END read canBus 12box Signals
+
+//  Send canBus 12box Values
+byte byteVoltageLeft;
+byte byteVoltageRight;
+byte byteVoltageIn;
+byte byteAmperage;
+//  END send canBus 12box Values
+
+//  Send canBus 12box States
+bool stateAutomatic = false;
+bool stateLeftIn = false;
+bool stateLeftOut = false;
+bool stateRightIn = false;
+bool stateRightOut = false;
+bool stateCHR = false;
+bool stateHome = false;
+bool stateInverter = false;
+//  END send canBus 12box States
 
 //         END LIBRARY CONF
 
@@ -16,6 +46,9 @@
 const int signalOn = A0;
 const int signalHome = 5;
 
+const int voltLeft = A9;
+const int voltRight = A10;
+const int voltIn = A11;
 const int amperemeter = A8;
 
 const int ledLeftIn = 40;
@@ -40,22 +73,34 @@ const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHo
 //            END PINS
 
 //           VARIABLES
-//           Voltimetros
-
-const int voltLeft = A9;
-const int voltRight = A10;
-const int voltIn = A11;
 
 int freq = 20;      // 50 Hz = 20 m/s; 60 Hz = 16.6667 m/s
-
 Voltmeter voltmeterLeft (voltLeft, freq);
 Voltmeter voltmeterRight (voltRight, freq);
 Voltmeter voltmeterIn (voltIn, freq);
 
 //         END VARIABLES
 
+//       FUNCTIONS DECLARED
+
+void msgValue (byte, byte, byte, byte);
+void msgState (byte, byte, byte, byte, byte, byte, byte, byte);
+
+//       END FUNCTIONS DECLARED
+
 void setup(){
+  while (!Serial);
   Serial.begin(115200);
+  SPI.begin();
+
+  mcp2515.reset();
+  mcp2515.setBitrate (CAN_500KBPS, MCP_8MHZ);
+  mcp2515.setNormalMode();
+
+  canMsgValue230_12.can_id = 0x036;
+  canMsgValue230_12.can_dlc = 4;
+  canMsgState230_12.can_id = 0x037;
+  canMsgState230_12.can_dlc = 8;
 
   pinMode(signalOn, INPUT);
   pinMode(signalHome, INPUT_PULLUP);
@@ -75,33 +120,77 @@ void setup(){
 void loop(){
 
   digitalWrite(ledAutomatic, HIGH);
-  digitalWrite(releRightIn, HIGH);
+  digitalWrite(releLeftIn, HIGH);
 
   voltmeterLeft.get();
+  float voltageLeft = voltmeterLeft.getVoltage();
+  byteVoltageLeft = voltageLeft;
+
   voltmeterRight.get();
+  float voltageRight = voltmeterRight.getVoltage();
+  byteVoltageRight = voltageRight;
+
   voltmeterIn.get();
-  float val = voltmeterLeft.getValue();
-  float vol = voltmeterLeft.getVoltage();
+  float voltageIn = voltmeterIn.getVoltage();
+  byteVoltageIn = voltageIn;
 
-  Serial.print(" Voltage  : ");
-  Serial.println(vol);
-  if (voltmeterLeft.getReady())
+  byteAmperage = 0x00;
+  stateInverter = true;
+
+  // Rear data from 12box
+  if (mcp2515.readMessage(&canMsg12_230) == MCP2515::ERROR_OK)
   {
-    Serial.println("            Encendido");
-    digitalWrite(ledLeftIn, HIGH);
-  } else {
-    Serial.println("            Apagado");
-    digitalWrite(ledLeftIn, LOW);
+    signalLeft = canMsg12_230.data[0];
+    signalRight = canMsg12_230.data[1];
   }
+  // END rear data from 12box
 
-
-
-  Serial.println();Serial.println("************************");
-
+  msgValue(byteVoltageLeft, byteVoltageRight, byteVoltageIn, byteAmperage);
+  msgState(stateAutomatic, stateLeftIn, stateLeftOut, stateRightIn, stateRightOut, stateCHR, stateHome, stateInverter);
   delay(1200);
 }
 
 //           FUNCTIONS
+
+void msgValue (byte valueLeft, byte valueRight, byte valueIn, byte valueAmper)
+{
+  if (valueLeft >= 255) {
+    canMsgValue230_12.data[0] = 255;
+  } else {
+    canMsgValue230_12.data[0] = valueLeft;
+  }
+
+  if (valueRight >= 255) {
+    canMsgValue230_12.data[1] = 255;
+  } else {
+    canMsgValue230_12.data[1] = valueRight;
+  }
+
+  if (valueIn >= 255) {
+    canMsgValue230_12.data[2] = 255;
+  } else {
+    canMsgValue230_12.data[2] = valueIn;
+  }
+
+  canMsgValue230_12.data[3] = valueAmper; // Reserved for Ampermeter
+
+  mcp2515.sendMessage(&canMsgValue230_12);
+}
+
+void msgState (byte stateAutomatic, byte stateLeftIn, byte stateLeftOut, byte stateRightIn, byte stateRightOut, byte stateCHR, byte stateHome, byte stateInverter)
+{
+  canMsgState230_12.data[0] = stateAutomatic;
+  canMsgState230_12.data[1] = stateLeftIn;
+  canMsgState230_12.data[2] = stateLeftOut;
+  canMsgState230_12.data[3] = stateRightIn;
+  canMsgState230_12.data[4] = stateRightOut;
+  canMsgState230_12.data[5] = stateCHR;
+  canMsgState230_12.data[6] = stateHome;
+  canMsgState230_12.data[7] = stateInverter;
+
+  mcp2515.sendMessage(&canMsgState230_12);
+}
+
 //         END FUNCTIONS
 
 /*
