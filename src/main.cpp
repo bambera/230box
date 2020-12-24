@@ -9,6 +9,7 @@
 #include <SPI.h>
 #include "Leds.h"
 #include "Voltmeter.h"
+#include "Ammeter.h"
 #include "mcp2515.h"
 
 struct can_frame canMsgValue230_12;
@@ -25,7 +26,7 @@ bool signalRight;
 byte byteVoltageLeft;
 byte byteVoltageRight;
 byte byteVoltageIn;
-byte byteAmperage;
+byte byteSlowAmper;
 //  END send canBus 12box Values
 
 //  Send canBus 12box States
@@ -46,10 +47,10 @@ bool stateInverter = false;
 const int signalOn = A0;
 const int signalHome = 5;
 
-const int voltLeft = A9;
-const int voltRight = A10;
-const int voltIn = A11;
-const int amperemeter = A8;
+const int voltmeterLeftPin = A9;
+const int voltmeterRightPin = A10;
+const int voltmeterInPin = A11;
+const int ammeterPin = A8;
 
 const int ledLeftIn = 40;
 const int ledLeftOut = 41;
@@ -75,9 +76,13 @@ const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHo
 //           VARIABLES
 
 int freq = 20;      // 50 Hz = 20 m/s; 60 Hz = 16.6667 m/s
-Voltmeter voltmeterLeft (voltLeft, freq);
-Voltmeter voltmeterRight (voltRight, freq);
-Voltmeter voltmeterIn (voltIn, freq);
+float calibAmper = 20.6;
+int intervalRead = 250;
+float amperMax = 5;
+Voltmeter voltmeterLeft (voltmeterLeftPin, freq);
+Voltmeter voltmeterRight (voltmeterRightPin, freq);
+Voltmeter voltmeterIn (voltmeterInPin, freq);
+Ammeter ammeter (ammeterPin, freq, calibAmper, intervalRead, amperMax);
 
 //         END VARIABLES
 
@@ -105,8 +110,6 @@ void setup(){
   pinMode(signalOn, INPUT);
   pinMode(signalHome, INPUT_PULLUP);
 
-  pinMode(amperemeter, INPUT);
-
   pinMode(releRightIn, OUTPUT);
   pinMode(releLeftIn, OUTPUT);
   pinMode(releRightOut, OUTPUT);
@@ -118,7 +121,6 @@ void setup(){
 }
 
 void loop(){
-
   digitalWrite(ledAutomatic, HIGH);
   digitalWrite(releLeftIn, HIGH);
 
@@ -134,7 +136,9 @@ void loop(){
   float voltageIn = voltmeterIn.getVoltage();
   byteVoltageIn = voltageIn;
 
-  byteAmperage = 0x00;
+  ammeter.get();
+  float slowAmper = ammeter.getAmperSlow();
+  byteSlowAmper = slowAmper;
   stateInverter = true;
 
   // Rear data from 12box
@@ -145,9 +149,9 @@ void loop(){
   }
   // END rear data from 12box
 
-  msgValue(byteVoltageLeft, byteVoltageRight, byteVoltageIn, byteAmperage);
+  msgValue(byteVoltageLeft, byteVoltageRight, byteVoltageIn, byteSlowAmper);
   msgState(stateAutomatic, stateLeftIn, stateLeftOut, stateRightIn, stateRightOut, stateCHR, stateHome, stateInverter);
-  delay(1200);
+  //delay(1200);
 }
 
 //           FUNCTIONS
