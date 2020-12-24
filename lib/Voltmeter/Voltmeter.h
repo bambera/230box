@@ -8,8 +8,6 @@ class Voltmeter {
 	public:
 		Voltmeter(const int sensorPin, const int freq);
 
-		int realVoltage;
-		int calibrated;
 		void get();
 		float getValue();
 		float getAverage();
