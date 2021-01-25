@@ -5,8 +5,9 @@
 
 //           LIBRARY CONF   
 
-#include <Arduino.h>
+#include "Arduino.h"
 #include "Leds.h"
+#include "Voltmeter.h"
 
 //         END LIBRARY CONF
 
@@ -15,10 +16,7 @@
 const int signalOn = A0;
 const int signalHome = 5;
 
-const int signalAmper = A8;
-const int signalLeft = A9;
-const int signalRight = A10;
-const int signalIn = A11;
+const int amperemeter = A8;
 
 const int ledLeftIn = 40;
 const int ledLeftOut = 41;
@@ -42,15 +40,27 @@ const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHo
 //            END PINS
 
 //           VARIABLES
+//           Voltimetros
+
+const int voltLeft = A9;
+const int voltRight = A10;
+const int voltIn = A11;
+
+int freq = 20;      // 50 Hz = 20 m/s; 60 Hz = 16.6667 m/s
+
+Voltmeter voltmeterLeft (voltLeft, freq);
+Voltmeter voltmeterRight (voltRight, freq);
+Voltmeter voltmeterIn (voltIn, freq);
+
 //         END VARIABLES
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   pinMode(signalOn, INPUT);
   pinMode(signalHome, INPUT_PULLUP);
 
-  pinMode(signalAmper, INPUT);
+  pinMode(amperemeter, INPUT);
 
   pinMode(releRightIn, OUTPUT);
   pinMode(releLeftIn, OUTPUT);
@@ -59,10 +69,36 @@ void setup(){
   pinMode(releHome, OUTPUT);
   pinMode(releCHR, OUTPUT);
 
-  leds.blinkOn();
+  //leds.blinkOn();
 }
 
 void loop(){
+
+  digitalWrite(ledAutomatic, HIGH);
+  digitalWrite(releRightIn, HIGH);
+
+  voltmeterLeft.get();
+  voltmeterRight.get();
+  voltmeterIn.get();
+  float val = voltmeterLeft.getValue();
+  float vol = voltmeterLeft.getVoltage();
+
+  Serial.print(" Voltage  : ");
+  Serial.println(vol);
+  if (voltmeterLeft.getReady())
+  {
+    Serial.println("            Encendido");
+    digitalWrite(ledLeftIn, HIGH);
+  } else {
+    Serial.println("            Apagado");
+    digitalWrite(ledLeftIn, LOW);
+  }
+
+
+
+  Serial.println();Serial.println("************************");
+
+  delay(1200);
 }
 
 //           FUNCTIONS
