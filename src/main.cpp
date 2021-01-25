@@ -18,14 +18,17 @@ struct can_frame canMsg12_230;
 MCP2515 mcp2515(53);
 
 //  Read canBus 12box Signals
-bool signalLeft;
-bool signalRight;
+bool testSignalIn;
+bool testSignalHome;
+bool testSignalLeft;
+bool testSignalRight;
 //  END read canBus 12box Signals
 
 //  Send canBus 12box Values
 byte byteVoltageLeft;
 byte byteVoltageRight;
 byte byteVoltageIn;
+byte byteVoltageHome;
 byte byteSlowAmper;
 //  END send canBus 12box Values
 
@@ -44,13 +47,14 @@ bool stateInverter = false;
 
 //             PINS
 
-const int signalOn = A0;
-const int signalHome = 5;
+const int signalOnPin = A0;
+const int signalHomePin = 5;
 
-const int voltmeterLeftPin = A9;
-const int voltmeterRightPin = A10;
+const int voltmeterHomePin = A10;
 const int voltmeterInPin = A11;
-const int ammeterPin = A8;
+const int voltmeterRightPin = A12;
+const int voltmeterLeftPin = A13;
+const int ammeterPin = A15;
 
 const int ledLeftIn = 40;
 const int ledLeftOut = 41;
@@ -75,20 +79,24 @@ const int reles[7] = {releRightIn, releLeftIn, releRightOut, releLeftOut, releHo
 
 //           VARIABLES
 
+bool signalOn = false;
+bool signalHome = false;
+
 int freq = 20;      // 50 Hz = 20 m/s; 60 Hz = 16.6667 m/s
 float calibAmper = 20.6;
 int intervalRead = 250;
 float amperMax = 5;
-Voltmeter voltmeterLeft (voltmeterLeftPin, freq);
-Voltmeter voltmeterRight (voltmeterRightPin, freq);
+Voltmeter voltmeterHome (voltmeterHomePin, freq);
 Voltmeter voltmeterIn (voltmeterInPin, freq);
+Voltmeter voltmeterRight (voltmeterRightPin, freq);
+Voltmeter voltmeterLeft (voltmeterLeftPin, freq);
 Ammeter ammeter (ammeterPin, freq, calibAmper, intervalRead, amperMax);
 
 //         END VARIABLES
 
 //       FUNCTIONS DECLARED
 
-void msgValue (byte, byte, byte, byte);
+void msgValue (byte, byte, byte, byte, byte);
 void msgState (byte, byte, byte, byte, byte, byte, byte, byte);
 
 //       END FUNCTIONS DECLARED
@@ -102,13 +110,10 @@ void setup(){
   mcp2515.setBitrate (CAN_500KBPS, MCP_8MHZ);
   mcp2515.setNormalMode();
 
-  canMsgValue230_12.can_id = 0x036;
-  canMsgValue230_12.can_dlc = 4;
-  canMsgState230_12.can_id = 0x037;
-  canMsgState230_12.can_dlc = 8;
 
-  pinMode(signalOn, INPUT);
-  pinMode(signalHome, INPUT_PULLUP);
+
+  pinMode(signalOnPin, INPUT);
+  pinMode(signalHomePin, INPUT_PULLUP);
 
   pinMode(releRightIn, OUTPUT);
   pinMode(releLeftIn, OUTPUT);
@@ -117,72 +122,126 @@ void setup(){
   pinMode(releHome, OUTPUT);
   pinMode(releCHR, OUTPUT);
 
-  //leds.blinkOn();
+  // leds.blinkOn();
 }
 
 void loop(){
-  digitalWrite(ledAutomatic, HIGH);
-  digitalWrite(releLeftIn, HIGH);
+  //digitalWrite(ledRightOut, HIGH);
 
-  voltmeterLeft.get();
-  float voltageLeft = voltmeterLeft.getVoltage();
-  byteVoltageLeft = voltageLeft;
-
-  voltmeterRight.get();
-  float voltageRight = voltmeterRight.getVoltage();
-  byteVoltageRight = voltageRight;
+  voltmeterHome.get();
+  float voltageHome = voltmeterHome.getVoltage();
+  byteVoltageHome = voltageHome;
 
   voltmeterIn.get();
   float voltageIn = voltmeterIn.getVoltage();
   byteVoltageIn = voltageIn;
 
+  voltmeterRight.get();
+  float voltageRight = voltmeterRight.getVoltage();
+  byteVoltageRight = voltageRight;
+
+  voltmeterLeft.get();
+  float voltageLeft = voltmeterLeft.getVoltage();
+  byteVoltageLeft = voltageLeft;
+
   ammeter.get();
   float slowAmper = ammeter.getAmperSlow();
   byteSlowAmper = slowAmper;
-  stateInverter = true;
 
   // Rear data from 12box
   if (mcp2515.readMessage(&canMsg12_230) == MCP2515::ERROR_OK)
   {
-    signalLeft = canMsg12_230.data[0];
-    signalRight = canMsg12_230.data[1];
+    testSignalIn = canMsg12_230.data[0];
+    testSignalHome = canMsg12_230.data[1];
+    testSignalRight = canMsg12_230.data[2];
+    testSignalLeft = canMsg12_230.data[3];
   }
   // END rear data from 12box
 
-  msgValue(byteVoltageLeft, byteVoltageRight, byteVoltageIn, byteSlowAmper);
+  signalOn = digitalRead(signalOnPin);
+  signalHome = digitalRead(signalHomePin);
+
+  if (signalOn)
+  {
+    digitalWrite(ledAutomatic, HIGH);
+    stateAutomatic = true;
+  } 
+  if (!signalOn) 
+  {
+    digitalWrite(ledAutomatic, LOW);
+    stateAutomatic = false;
+  }
+  if (signalHome)
+  {
+    digitalWrite(ledHome, HIGH);
+    stateHome = true; // if rele home is high actualy test
+  } 
+  if (!signalHome) 
+  {
+    digitalWrite(ledHome, LOW);
+    stateHome = false;
+  }
+
+
+  msgValue(byteVoltageHome, byteVoltageIn, byteVoltageRight, byteVoltageLeft, byteSlowAmper);
   msgState(stateAutomatic, stateLeftIn, stateLeftOut, stateRightIn, stateRightOut, stateCHR, stateHome, stateInverter);
-  //delay(1200);
+  //delay(500);
 }
 
 //           FUNCTIONS
 
-void msgValue (byte valueLeft, byte valueRight, byte valueIn, byte valueAmper)
+void msgValue (byte valueHome, byte valueIn, byte valueRight, byte valueLeft, byte valueAmper)
 {
-  if (valueLeft >= 255) {
+  canMsgValue230_12.can_id = 0x036;
+  canMsgValue230_12.can_dlc = 5;
+
+  if (valueHome > 255) {
     canMsgValue230_12.data[0] = 255;
   } else {
-    canMsgValue230_12.data[0] = valueLeft;
+    canMsgValue230_12.data[0] = valueHome;
   }
 
-  if (valueRight >= 255) {
+  if (valueIn > 255) {
     canMsgValue230_12.data[1] = 255;
   } else {
-    canMsgValue230_12.data[1] = valueRight;
+    canMsgValue230_12.data[1] = valueIn;
   }
 
-  if (valueIn >= 255) {
+  if (valueRight > 255) {
     canMsgValue230_12.data[2] = 255;
   } else {
-    canMsgValue230_12.data[2] = valueIn;
+    canMsgValue230_12.data[2] = valueRight;
   }
 
-  canMsgValue230_12.data[3] = valueAmper; // Reserved for Ampermeter
+  if (valueLeft > 255) {
+    canMsgValue230_12.data[3] = 255;
+  } else {
+    canMsgValue230_12.data[3] = valueLeft;
+  }
+
+  canMsgValue230_12.data[4] = valueAmper; // Reserved for Ampermeter
+
+
+  Serial.print(" valueHome: ");
+  Serial.println(canMsgValue230_12.data[0]);
+  Serial.print(" valueIn: ");
+  Serial.println(canMsgValue230_12.data[1]);
+  Serial.print(" valueRight: ");
+  Serial.println(canMsgValue230_12.data[2]);
+  Serial.print(" valueLeft: ");
+  Serial.println(canMsgValue230_12.data[3]);
+  Serial.print(" valueAmper: ");
+  Serial.println(canMsgValue230_12.data[4]);
+  Serial.println("***************");
 
   mcp2515.sendMessage(&canMsgValue230_12);
 }
 
 void msgState (byte stateAutomatic, byte stateLeftIn, byte stateLeftOut, byte stateRightIn, byte stateRightOut, byte stateCHR, byte stateHome, byte stateInverter)
 {
+  canMsgState230_12.can_id = 0x037;
+  canMsgState230_12.can_dlc = 8;
+
   canMsgState230_12.data[0] = stateAutomatic;
   canMsgState230_12.data[1] = stateLeftIn;
   canMsgState230_12.data[2] = stateLeftOut;
@@ -191,6 +250,23 @@ void msgState (byte stateAutomatic, byte stateLeftIn, byte stateLeftOut, byte st
   canMsgState230_12.data[5] = stateCHR;
   canMsgState230_12.data[6] = stateHome;
   canMsgState230_12.data[7] = stateInverter;
+  Serial.print(" stateAutomatic: ");
+  Serial.println(canMsgState230_12.data[0]);
+  Serial.print(" stateLeftIn: ");
+  Serial.println(canMsgState230_12.data[1]);
+  Serial.print(" stateLeftOut: ");
+  Serial.println(canMsgState230_12.data[2]);
+  Serial.print(" stateRightIn: ");
+  Serial.println(canMsgState230_12.data[3]);
+  Serial.print(" stateRightOut: ");
+  Serial.println(canMsgState230_12.data[4]);
+  Serial.print(" stateCHR: ");
+  Serial.println(canMsgState230_12.data[5]);
+  Serial.print(" stateHome: ");
+  Serial.println(canMsgState230_12.data[6]);
+  Serial.print(" stateInverter: ");
+  Serial.println(canMsgState230_12.data[7]);
+  Serial.println("***************");
 
   mcp2515.sendMessage(&canMsgState230_12);
 }
