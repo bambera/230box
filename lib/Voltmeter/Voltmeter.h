@@ -28,5 +28,4 @@ class Voltmeter {
 		float _alpha = 0.86;
 		float _S = _Y;
 };
-
 #endif
