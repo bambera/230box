@@ -1,7 +1,8 @@
 
 
-
-230box to 12box
+  /////////////////////
+ // 230box to 12box //
+/////////////////////
 
 check communication
 
@@ -23,8 +24,9 @@ voltage (from internal source home)
 anmeter
 
 
-
-12box to 230box
+  /////////////////////
+ // 12box to 230box //
+/////////////////////
 
 stateInverter
 
