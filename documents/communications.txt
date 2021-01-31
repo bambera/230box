@@ -1,0 +1,34 @@
+
+
+
+230box to 12box
+
+check communication
+
+stateReleRightIn
+stateReleRightOut
+stateReleLefttIn
+stateReleRightOut
+stateReleCHR
+stateReleHome
+
+locker (Demand for signalHome)
+requestInverter
+
+
+voltage (from external source right)
+voltage (from external source left)
+voltage (from internal box)
+voltage (from internal source home)
+anmeter
+
+
+
+12box to 230box
+
+stateInverter
+
+
+
+
+
