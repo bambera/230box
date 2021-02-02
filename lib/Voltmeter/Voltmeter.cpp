@@ -5,6 +5,7 @@ Voltmeter::Voltmeter(const int sensorPin, const int freq)
 {
   _sensor = sensorPin;
   _freq = freq;
+  _debounce = 0;
 }
 
 void Voltmeter::get()
@@ -43,9 +44,17 @@ float Voltmeter::getVoltage()
 bool Voltmeter::getReady()
 {
   getVoltage();
-  if (_voltage > 190 && _voltage < 240){
-    return true;
+  if (_voltage > 190 && _voltage < 240)
+  {
+    if (_debounce < 3)
+    {
+      _debounce++;
+      return false;
+    } else {
+      return true;
+    }
   } else {
+    _debounce = 0;
     return false;
   }
 }

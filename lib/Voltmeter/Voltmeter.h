@@ -19,6 +19,7 @@ class Voltmeter {
 		float _average;
 		float _voltage;
 		int _R;
+		int _debounce;
 		unsigned long _tMax;
 		unsigned long _tActu;
 		float _maxVal;
