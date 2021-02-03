@@ -8,7 +8,8 @@ La caja dispone de:
 
 ### 3 Entradas de corriente.
 
-Una proviene del inversor el cual és activado solo bajo demanda através del arduino, para ello dispone de su driver correspondiente instalado en el inversor.
+Una proviene del inversor el cual es activado solo bajo demanda através del arduino nombre
+en clave 12box, para ello dispone de su driver correspondiente instalado en el inversor.
 
 Las otras dos son similares pero independientes cada una dispuesta hacia el exterior a sendos laterales. Estos pueden tanto adquirir como ofrecer 230V indiferentemente.
 
@@ -43,6 +44,7 @@ El cargador de baterías de 230V. Este solo puede ser activado cuando la aliment
 * Control y monotorización de su actividad y consumo.
 
 * Control y reducción de la temperatura con dos ventiladores extractores.
+  Despues de test de temperatura se ha decidido anular los ventiladores.
 
 
 ## Dispone de botones para la realización de maniobras manuales.
@@ -51,19 +53,13 @@ Estas solo activan/desactivan el arduino y los relés.
 
 ## Los relés
 
-Al disponer de un tamaño muy reducido y necesitar cinco relés, no se han encontrado ninguno bipolar que se ajuste a las medidas, por ello dispone de diez relés sólidos que quedan conectados para que actúen de forma paralela por circuito.
+Al disponer de un tamaño muy reducido y necesitar cinco relés, no se han encontrado ninguno bipolar que se ajuste a las medidas, por ello dispone de diez relés de estado sólido que quedan conectados para que actúen de forma paralela (bipolar) por circuito.
+Se dispone de otro relé este electromecánico para alimentar el cargador de baterias 220V,
+comandado gracias al mosfet IRF520.
 
 ## Comunicación
 
-La comunicación se realiza através de un módulo SPI to CANbus. Esto mantiene todos los arduinos con la Raspberry conectados entre sí, por el mismo cable ethernet Cat7.
-
-4 Pares:
-
-* 1 par cruzado para CANbus.
-
-* 2 pares para alimentación 12V.
-
-* 1 par auxiliar.
+La comunicación se realiza através de un módulo SPI to CANbus.
 
 
 ## Recursos para el autómata
@@ -72,17 +68,23 @@ La comunicación se realiza através de un módulo SPI to CANbus. Esto mantiene 
 
 * Amperímetro WCS1800 con un amplificador MCP602.
 
-* 3 Voltímetros ZMPT101B con un amplificador LM358.
+* 4 Voltímetros ZMPT101B con un amplificador LM358.
 
-* Sensores de temperatura DS18B20 1-wire.
+* Sensores de temperatura DS18B20 1-wire. (Actualmente excluido)
 
 * Módulo SPI to CANbus MCP2515.
 
+* Mosfet IRF520
+
+* Una placa artesanal (en su momento se subirá el esquema).
+
 * Micro botonera de seis botones.
 
-* Una placa artesanal con cuatro drivers (en su momento se subirá el esquema).
+* 12VDC to 9VDC
 
 * 12VDC to 5VDC
+
+* Una recistencia 10K
 
 
 ## Licencia
