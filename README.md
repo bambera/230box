@@ -78,7 +78,7 @@ La comunicación se realiza através de un módulo SPI to CANbus.
 
 * Una placa artesanal (en su momento se subirá el esquema).
 
-** Micro botonera de seis botones.
+* Micro botonera de seis botones.
 
 * 12VDC to 9VDC
 
