@@ -2,6 +2,8 @@
 
 Proyecto para automatizar una caja de electricidad de 230 voltios de una autocaravana con arduino.
 
+Migrated to <https://github.com/c2mismo/caravan/high_voltage>
+
 ## Definicion de la caja
 
 La caja dispone de:
